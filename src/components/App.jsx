@@ -1,16 +1,43 @@
+import { useDispatch } from 'react-redux';
+import { useEffect, lazy } from 'react';
+import { fetchCurrentUser } from 'redux/auth/authOperations';
+import { Route, Routes } from 'react-router-dom';
+import PublicRoute from './Rotes/PublicRoute';
+import PrivateRoute from './Rotes/PrivateRoute';
+import Layout from './Layout/Layout';
+const RegisterPage = lazy(() => import('../pages/RegisterPage'));
+const LoginPage = lazy(() => import('../pages/LoginPage'));
+const Contacts = lazy(() => import('../pages/Contacts'));
+
 export const App = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCurrentUser());
+  });
+
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101'
-      }}
-    >
-      React homework template
-    </div>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route
+          path="register"
+          element={
+            <PublicRoute redirectTo="/contacts" component={<RegisterPage />} />
+          }
+        />
+        <Route
+          path="login"
+          index element={
+            <PublicRoute redirectTo="/contacts" component={<LoginPage />} />
+          }
+        />
+        <Route
+          path="contacts"
+          element={
+            <PrivateRoute redirectTo="/login" component={<Contacts />} />
+          }
+        />
+      </Route>
+    </Routes>
   );
 };
